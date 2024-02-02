@@ -5,7 +5,4 @@ import com.npst.evok.api.evok_apis.entity.VerifyVpa;
 public interface VerifyVPAService {
 
     Object verifyVpa(VerifyVpa verifyVpa);
-
-    String decryptResponse(String dcrypt);
-
 }

@@ -13,9 +13,8 @@ public class MerchantTransfer {
 	private String statusKYC;
 	private String customerName;
 	private String sid;
-	
-	
-
-	
+	private String checksum;
+	private String encKey;
+	private String headerKey;
 	
 }

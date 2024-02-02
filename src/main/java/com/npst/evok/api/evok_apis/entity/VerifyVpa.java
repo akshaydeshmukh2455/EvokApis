@@ -10,5 +10,8 @@ public class VerifyVpa {
 	private String upiId;
 	private String terminalId;
 	private String sid;
+	private String checksum;
+	private String encKey;
+	private String headerKey;
 	
 }

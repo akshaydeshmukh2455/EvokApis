@@ -1,29 +1,27 @@
 package com.npst.evok.api.evok_apis.serviceimpl;
 
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Base64;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import com.npst.evok.api.evok_apis.constants.ConstantURL;
 import com.npst.evok.api.evok_apis.entity.TransactionReport;
 import com.npst.evok.api.evok_apis.service.TransactionReportService;
+import com.npst.evok.api.evok_apis.utils.HttpClient;
+import com.npst.evok.api.evok_apis.utils.Util;
 
 @Service
 public class TransactionReportServiceImpl implements TransactionReportService {
 
-	private static final String CHECKSUM_KEY = "46efbba174d340d791ba66fa8f6606c1";
-	public static final String ENC_KEY = "2b273ac2cc334f05812b34a04310360a";
+	public String ENC_KEY = "";
 
 	@Override
 	public String transactionReport(TransactionReport transactionReport) {
 		JSONObject obj = getJsonRequest();
+
+		ENC_KEY = transactionReport.getEncKey();
 
 		obj.put("source", transactionReport.getSource());
 		obj.put("channel", transactionReport.getChannel());
@@ -34,17 +32,23 @@ public class TransactionReportServiceImpl implements TransactionReportService {
 		obj.put("pageNo", transactionReport.getPageNo());
 
 		System.out.println("Raw Request" + obj.toString());
-		String checksum = generateVerifyVpaChecksum(obj, CHECKSUM_KEY);
+		String checksum = generateTxnReportChecksum(obj, transactionReport.getChecksum());
 		System.out.println("Checksum is " + checksum);
 		obj.put("checksum", checksum);
 		System.out.println("Final string to encrypt is " + obj.toString());
-		String encryptedReq = encryptRequest(obj.toString(), ENC_KEY);
+		String encryptedReq = Util.encryptRequest(obj.toString(), transactionReport.getEncKey());
 		System.out.println("Final encrypted request " + encryptedReq);
 
-		// System.out.println("Decrypted request to cross verify " +
-		// decryptResponse(encryptedReq, ENC_KEY));
+		String des = null;
+		String enqResponse = HttpClient.sendToSwitch(transactionReport.getHeaderKey(), ConstantURL.TRANSACTION_REPORT,
+				encryptedReq);
 
-		return encryptedReq;
+		try {
+			des = java.net.URLDecoder.decode(Util.decryptResponse(enqResponse, ENC_KEY), StandardCharsets.UTF_8.name());
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return des;
 	}
 
 	private static JSONObject getJsonRequest() {
@@ -53,7 +57,7 @@ public class TransactionReportServiceImpl implements TransactionReportService {
 		return obj;
 	}
 
-	private static String generateVerifyVpaChecksum(JSONObject qrObject, String checkSumKey) {
+	private static String generateTxnReportChecksum(JSONObject qrObject, String checkSumKey) {
 		StringBuilder concatenatedString = new StringBuilder();
 		try {
 			concatenatedString.append(qrObject.get("source"));
@@ -63,74 +67,12 @@ public class TransactionReportServiceImpl implements TransactionReportService {
 			concatenatedString.append(qrObject.get("endDate"));
 			concatenatedString.append(qrObject.get("pageNo"));
 			concatenatedString.append(qrObject.get("pageSize"));
-			
 
 			System.out.println("String is " + concatenatedString.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return generateChecksumMerchant(concatenatedString.toString(), checkSumKey);
+		return Util.generateChecksumMerchant(concatenatedString.toString(), checkSumKey);
 	}
 
-	public static String generateChecksumMerchant(String concatenatedString, String checksumkey) {
-		String inputString = concatenatedString + checksumkey;
-		StringBuffer sb = null;
-		MessageDigest md;
-		try {
-			md = MessageDigest.getInstance("SHA-256");
-			md.update(inputString.getBytes());
-			byte byteData[] = md.digest();
-			sb = new StringBuffer();
-			for (int i = 0; i < byteData.length; i++) {
-				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
-			}
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return sb.toString();
-	}
-
-	private static String encryptRequest(String strToEncrypt, String encryptKey) {
-		try {
-			Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-			cipher.init(Cipher.ENCRYPT_MODE, setMerchantKey(encryptKey));
-			return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	private static SecretKeySpec setMerchantKey(String myKey) {
-		SecretKeySpec merchantSecretKey_ = null;
-		try {
-			MessageDigest sha = null;
-			byte[] key_ = myKey.getBytes("UTF-8");
-			sha = MessageDigest.getInstance("SHA-256");
-			key_ = sha.digest(key_);
-			key_ = Arrays.copyOf(key_, 16);
-			merchantSecretKey_ = new SecretKeySpec(key_, "AES");
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		return merchantSecretKey_;
-	}
-
-	public static String decryptResponse(String responseString, String encryptKey) {
-		try {
-			Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
-			cipher.init(Cipher.DECRYPT_MODE, setMerchantKey(encryptKey));
-			return new String(cipher.doFinal(Base64.getDecoder().decode(responseString)), "UTF-8");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	@Override
-	public String decryptResponse(String dcrypt) {
-		return "Decrypted request to cross verify" + decryptResponse(dcrypt, ENC_KEY);
-	}
 }

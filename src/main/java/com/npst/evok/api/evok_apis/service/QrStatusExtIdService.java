@@ -4,6 +4,4 @@ import com.npst.evok.api.evok_apis.entity.QrStatusExtId;
 
 public interface QrStatusExtIdService {
 	Object qrStatusExtId(QrStatusExtId qrStatusExtId);
-
-    String decryptResponse(String dcrypt);
 }

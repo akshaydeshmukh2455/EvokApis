@@ -11,5 +11,7 @@ public class TransactionReport {
 	private String endDate;
 	private String pageSize;
 	private String pageNo;
-	
+	private String checksum;
+	private String encKey;
+	private String headerKey;
 }

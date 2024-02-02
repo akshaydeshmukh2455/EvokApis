@@ -1,145 +1,101 @@
 package com.npst.evok.api.evok_apis.serviceimpl;
 
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Base64;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import com.npst.evok.api.evok_apis.constants.ConstantURL;
 import com.npst.evok.api.evok_apis.entity.GenerateQR;
 import com.npst.evok.api.evok_apis.service.GenerateQRService;
+import com.npst.evok.api.evok_apis.utils.HttpClient;
+import com.npst.evok.api.evok_apis.utils.Util;
 
 @Service
 public class GenerateQRServiceImpl implements GenerateQRService {
 
-	private static final String CHECKSUM_KEY = "46efbba174d340d791ba66fa8f6606c1";
-	private static final String ENC_KEY = "2b273ac2cc334f05812b34a04310360a";
-	
+	String URL_TO_HIT = "https://merchantprod.timepayonline.com/evok/qr/v1/dqr";
+//	public String ENC_KEY = "";
+
 	@Override
-    public String generateQR(GenerateQR generateQR) {
-        JSONObject obj = getJsonRequest();
-       
-        obj.put("source", generateQR.getSource());
-        obj.put("channel", generateQR.getChannel());
-        obj.put("extTransactionId", generateQR.getExtTransactionId());
-        obj.put("sid", generateQR.getSid());
-        obj.put("terminalId", generateQR.getTerminalId());
-        obj.put("amount", generateQR.getAmount());
-        obj.put("type", generateQR.getType());
-        obj.put("remark", generateQR.getRemark());
-        obj.put("requestTime", generateQR.getRequestTime());
-        obj.put("minAmount", generateQR.getMinAmount());
-        obj.put("receipt", generateQR.getReceipt());
-        
-        System.out.println("Raw Request" + obj.toString());
-        String checksum = generatemerchantTransferChecksum(obj, CHECKSUM_KEY);
-        System.out.println("Checksum is " + checksum);
-        obj.put("checksum", checksum);
-        System.out.println("Final string to encrypt is " + obj.toString());
-        String encryptedReq = encryptRequest(obj.toString(), ENC_KEY);
-        System.out.println("Final encrypted request " + encryptedReq);
-        // System.out.println("Decrypted request to cross verify " +
-        // decryptResponse(encryptedReq, ENC_KEY));
-        return encryptedReq;
-    }
+	public String generateQR(GenerateQR generateQR) {
+		JSONObject obj = getJsonRequest();
 
-    private static JSONObject getJsonRequest() {
-        JSONObject obj = new JSONObject();
+//		ENC_KEY = generateQR.getEncKey();
+		obj.put("source", generateQR.getSource());
+		obj.put("channel", generateQR.getChannel());
+		if (generateQR.getType().equals("D")) {
+			obj.put("extTransactionId", generateQR.getSource() + Math.abs(new Random().nextInt()));
+		} else {
+			obj.put("extTransactionId", "");
+		}
+//        obj.put("extTransactionId", generateQR.getSource()+Math.abs(new Random().nextInt()));
+//        obj.put("extTransactionId", generateQR.getExtTransactionId());
+		obj.put("sid", generateQR.getSid());
+		obj.put("terminalId", generateQR.getTerminalId());
+		obj.put("amount", generateQR.getAmount());
+		obj.put("type", generateQR.getType());
+		obj.put("remark", generateQR.getRemark());
+		obj.put("requestTime", generateQR.getRequestTime());
+		obj.put("minAmount", generateQR.getAmount());
+		obj.put("receipt", generateQR.getReceipt());
 
-        return obj;
-    }
+		System.out.println("Raw Request" + obj.toString());
+		String checksum = generatQRChecksum(obj, generateQR.getChecksum());
+		System.out.println("Checksum is " + checksum);
+		obj.put("checksum", checksum);
+		System.out.println("Final string to encrypt is " + obj.toString());
+		String encryptedReq = Util.encryptRequest(obj.toString(), generateQR.getEncKey());
+		System.out.println("Final encrypted request " + encryptedReq);
 
-    private static String generatemerchantTransferChecksum(JSONObject qrObject, String checkSumKey) {
-        StringBuilder concatenatedString = new StringBuilder();
-        try {
-            concatenatedString.append(qrObject.get("source"));
-            concatenatedString.append(qrObject.get("channel"));
-            concatenatedString.append(qrObject.get("extTransactionId"));
-            concatenatedString.append(qrObject.get("sid"));
-            concatenatedString.append(qrObject.get("terminalId"));
-            concatenatedString.append(qrObject.get("amount"));
-            concatenatedString.append(qrObject.get("type"));
-            concatenatedString.append(qrObject.get("remark"));
-            concatenatedString.append(qrObject.get("requestTime"));
-            concatenatedString.append(qrObject.get("minAmount"));
-            concatenatedString.append(qrObject.get("receipt"));
+		String des = null;
+		String enqResponse = HttpClient.sendToSwitch(generateQR.getHeaderKey(), ConstantURL.GENERATE_QR, encryptedReq);
 
-            System.out.println("String is " + concatenatedString.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return generateChecksumMerchant(concatenatedString.toString(), checkSumKey);
-    }
+		try {
+			des = java.net.URLDecoder.decode(Util.decryptResponse(enqResponse, generateQR.getEncKey()),
+					StandardCharsets.UTF_8.name());
+			JSONObject responseObj = new JSONObject(des);
 
-    public static String generateChecksumMerchant(String concatenatedString, String checksumkey) {
-        String inputString = concatenatedString + checksumkey;
-        StringBuffer sb = null;
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-            md.update(inputString.getBytes());
-            byte byteData[] = md.digest();
-            sb = new StringBuffer();
-            for (int i = 0; i < byteData.length; i++) {
-                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
-            }
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return sb.toString();
-    }
+			String extTransactionId = responseObj.getString("extTransactionId");
+			String qrString = responseObj.getString("qrString");
 
-    private static String encryptRequest(String strToEncrypt, String encryptKey) {
-        try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, setMerchantKey(encryptKey));
-            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+			JSONObject jsonResponse = new JSONObject();
+			jsonResponse.put("extTransactionId", extTransactionId);
+			jsonResponse.put("qrString", qrString);
 
-    private static SecretKeySpec setMerchantKey(String myKey) {
-        SecretKeySpec merchantSecretKey_ = null;
-        try {
-            MessageDigest sha = null;
-            byte[] key_ = myKey.getBytes("UTF-8");
-            sha = MessageDigest.getInstance("SHA-256");
-            key_ = sha.digest(key_);
-            key_ = Arrays.copyOf(key_, 16);
-            merchantSecretKey_ = new SecretKeySpec(key_, "AES");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return merchantSecretKey_;
-    }
+			return jsonResponse.toString();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return des;
+	}
 
-    public static String decryptResponse(String responseString, String encryptKey) {
-        try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
-            cipher.init(Cipher.DECRYPT_MODE, setMerchantKey(encryptKey));
-            return new String(cipher.doFinal(Base64.getDecoder().decode(responseString)), "UTF-8");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+	private static JSONObject getJsonRequest() {
+		JSONObject obj = new JSONObject();
+		return obj;
+	}
 
-    
+	private static String generatQRChecksum(JSONObject qrObject, String checkSumKey) {
+		StringBuilder concatenatedString = new StringBuilder();
+		try {
+			concatenatedString.append(qrObject.get("source"));
+			concatenatedString.append(qrObject.get("channel"));
+			concatenatedString.append(qrObject.get("extTransactionId"));
+			concatenatedString.append(qrObject.get("sid"));
+			concatenatedString.append(qrObject.get("terminalId"));
+			concatenatedString.append(qrObject.get("amount"));
+			concatenatedString.append(qrObject.get("type"));
+			concatenatedString.append(qrObject.get("remark"));
+			concatenatedString.append(qrObject.get("requestTime"));
+			concatenatedString.append(qrObject.get("minAmount"));
+			concatenatedString.append(qrObject.get("receipt"));
 
-    @Override
-    public String decryptResponse(String dcrypt) {
-
-        return "Decrypted request to cross verify" + decryptResponse(dcrypt, ENC_KEY);
-    }
-
+			System.out.println("String is " + concatenatedString.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Util.generateChecksumMerchant(concatenatedString.toString(), checkSumKey);
+	}
 }

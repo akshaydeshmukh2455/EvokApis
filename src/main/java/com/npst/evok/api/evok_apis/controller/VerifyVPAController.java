@@ -15,33 +15,20 @@ import com.npst.evok.api.evok_apis.service.VerifyVPAService;
 @RestController
 public class VerifyVPAController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(VerifyVPAController.class);
-    @Autowired
-    private VerifyVPAService verifyVPAService;
+	private static final Logger LOG = LoggerFactory.getLogger(VerifyVPAController.class);
+	@Autowired
+	private VerifyVPAService verifyVPAService;
 
-    @PostMapping("/verifyVpa")
-    public ResponseEntity<Object> verifyVpa(@RequestBody VerifyVpa verifyVpa) {
-        Object response = null;
-        try {
-            response = verifyVPAService.verifyVpa(verifyVpa);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/verifyVpaDec")
-    public ResponseEntity<Object> decryptedData(@RequestBody String decrypted) {
-        String dcrypt = null;
-        try {
-            dcrypt = verifyVPAService.decryptResponse(decrypted);
-            return new ResponseEntity<Object>(dcrypt, HttpStatus.OK);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<Object>(dcrypt, HttpStatus.BAD_REQUEST);
-        }
-    }
+	@PostMapping("/verifyVpa")
+	public ResponseEntity<Object> verifyVpa(@RequestBody VerifyVpa verifyVpa) {
+		Object response = null;
+		try {
+			response = verifyVPAService.verifyVpa(verifyVpa);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }

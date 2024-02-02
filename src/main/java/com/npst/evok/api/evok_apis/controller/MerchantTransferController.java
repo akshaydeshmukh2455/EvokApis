@@ -15,42 +15,24 @@ import com.npst.evok.api.evok_apis.service.MerchantTransferService;
 @RestController
 public class MerchantTransferController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(VerifyVPAController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(VerifyVPAController.class);
 
-    @Autowired
-    private MerchantTransferService merchantTransferService;
+	@Autowired
+	private MerchantTransferService merchantTransferService;
 
-    @PostMapping("/merchantTransferEnc")
-    public ResponseEntity<Object> merchantTransfer(@RequestBody MerchantTransfer merchantTransfer) {
-        Object response = null;
-        try {
+	@PostMapping("/merchantTransferEnc")
+	public ResponseEntity<Object> merchantTransfer(@RequestBody MerchantTransfer merchantTransfer) {
+		Object response = null;
+		try {
 
-            response = merchantTransferService.merchantTransfer(merchantTransfer);
+			response = merchantTransferService.merchantTransfer(merchantTransfer);
 
-            return new ResponseEntity<>(response, HttpStatus.OK);
+			return new ResponseEntity<>(response, HttpStatus.OK);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/merchantTransferDec")
-    public ResponseEntity<Object> decryptedData(@RequestBody String decrypted) {
-
-        String dcrypt = null;
-        try {
-
-            dcrypt = merchantTransferService.decryptResponse(decrypted);
-
-            return new ResponseEntity<Object>(dcrypt, HttpStatus.OK);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            return new ResponseEntity<Object>(dcrypt, HttpStatus.BAD_REQUEST);
-
-        }
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }

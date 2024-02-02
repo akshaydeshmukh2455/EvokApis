@@ -13,35 +13,23 @@ import com.npst.evok.api.evok_apis.entity.QrStatusRRN;
 import com.npst.evok.api.evok_apis.entity.TransactionStatus;
 import com.npst.evok.api.evok_apis.service.QrStatusRRNService;
 import com.npst.evok.api.evok_apis.service.TransactionStatusService;
+
 @RestController
 public class QrStatusRRNController {
 	private static final Logger LOG = LoggerFactory.getLogger(QrStatusRRNController.class);
-    @Autowired
-    private QrStatusRRNService qrStatusRRNService;
+	@Autowired
+	private QrStatusRRNService qrStatusRRNService;
 
-    @PostMapping("/rrnEnc")
-    public ResponseEntity<Object> qrStatusRRN(@RequestBody QrStatusRRN qrStatusRRN) {
-        Object response = null;
-        try {
-            response = qrStatusRRNService.qrStatusRRN(qrStatusRRN);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/rrnDec")
-    public ResponseEntity<Object> decryptedData(@RequestBody String decrypted) {
-        String dcrypt = null;
-        try {
-            dcrypt = qrStatusRRNService.decryptResponse(decrypted);
-            return new ResponseEntity<Object>(dcrypt, HttpStatus.OK);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<Object>(dcrypt, HttpStatus.BAD_REQUEST);
-        }
-    }
+	@PostMapping("/rrnEnc")
+	public ResponseEntity<Object> qrStatusRRN(@RequestBody QrStatusRRN qrStatusRRN) {
+		Object response = null;
+		try {
+			response = qrStatusRRNService.qrStatusRRN(qrStatusRRN);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }

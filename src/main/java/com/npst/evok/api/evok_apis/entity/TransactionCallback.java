@@ -17,5 +17,8 @@ public class TransactionCallback {
 	private String upiTxnId;
 	private String status;
 	private String custRefNo;
+	private String checksum;
+	private String encKey;
+	
 	
 }

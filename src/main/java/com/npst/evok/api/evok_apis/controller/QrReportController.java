@@ -14,33 +14,21 @@ import com.npst.evok.api.evok_apis.service.QrReportService;
 
 @RestController
 public class QrReportController {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(QrReportController.class);
-    @Autowired
-    private QrReportService qrReportService;
+	@Autowired
+	private QrReportService qrReportService;
 
-    @PostMapping("/qrReportEnc")
-    public ResponseEntity<Object> qrReport(@RequestBody QrReport qrReport) {
-        Object response = null;
-        try {
-            response = qrReportService.qrReport(qrReport);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-    }
+	@PostMapping("/qrReportEnc")
+	public ResponseEntity<Object> qrReport(@RequestBody QrReport qrReport) {
+		Object response = null;
+		try {
+			response = qrReportService.qrReport(qrReport);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-    @PostMapping("/qrReportDec")
-    public ResponseEntity<Object> decryptedData(@RequestBody String decrypted) {
-        String dcrypt = null;
-        try {
-            dcrypt = qrReportService.decryptResponse(decrypted);
-            return new ResponseEntity<Object>(dcrypt, HttpStatus.OK);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<Object>(dcrypt, HttpStatus.BAD_REQUEST);
-        }
-    }
 }

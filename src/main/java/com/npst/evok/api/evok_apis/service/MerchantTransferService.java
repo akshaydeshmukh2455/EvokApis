@@ -4,8 +4,6 @@ import com.npst.evok.api.evok_apis.entity.MerchantTransfer;
 
 public interface MerchantTransferService {
 
-    Object merchantTransfer(MerchantTransfer merchantTransfer);
-
-    String decryptResponse(String dcrypt);
+	Object merchantTransfer(MerchantTransfer merchantTransfer);
 
 }

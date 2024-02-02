@@ -8,5 +8,9 @@ public class TransactionStatus {
 	private String channel;
 	private String extTransactionId;
 	private String terminalId;
+	private String checksum;
+	private String encKey;
+	private String headerKey;
+	
 	
 }

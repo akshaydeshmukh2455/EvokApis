@@ -16,33 +16,20 @@ import com.npst.evok.api.evok_apis.service.VerifyVPAService;
 
 @RestController
 public class TransactionReportController {
-	private static final Logger LOG = LoggerFactory.getLogger(TransactionReport.class);
-    @Autowired
-    private TransactionReportService transactionReportService;
+	private static final Logger LOG = LoggerFactory.getLogger(TransactionReportController.class);
+	@Autowired
+	private TransactionReportService transactionReportService;
 
-    @PostMapping("/reportEnc")
-    public ResponseEntity<Object> transactionReport(@RequestBody TransactionReport transactionReport) {
-        Object response = null;
-        try {
-            response = transactionReportService.transactionReport(transactionReport);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/reportDec")
-    public ResponseEntity<Object> decryptedData(@RequestBody String decrypted) {
-        String dcrypt = null;
-        try {
-            dcrypt = transactionReportService.decryptResponse(decrypted);
-            return new ResponseEntity<Object>(dcrypt, HttpStatus.OK);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<Object>(dcrypt, HttpStatus.BAD_REQUEST);
-        }
-    }
+	@PostMapping("/reportEnc")
+	public ResponseEntity<Object> transactionReport(@RequestBody TransactionReport transactionReport) {
+		Object response = null;
+		try {
+			response = transactionReportService.transactionReport(transactionReport);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }

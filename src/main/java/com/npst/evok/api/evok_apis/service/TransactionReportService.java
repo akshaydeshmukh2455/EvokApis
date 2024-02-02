@@ -4,5 +4,4 @@ import com.npst.evok.api.evok_apis.entity.TransactionReport;
 
 public interface TransactionReportService {
 	Object transactionReport(TransactionReport transactionReport);
-    String decryptResponse(String dcrypt);
 }

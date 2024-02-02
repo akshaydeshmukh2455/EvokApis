@@ -16,8 +16,7 @@ public class GenerateQR {
 	private String requestTime;
 	private String minAmount;
 	private String receipt;
-	
-	
-	
-	
+	private String checksum;
+	private String encKey;
+	private String headerKey;	
 }

@@ -12,5 +12,7 @@ public class QrReport {
 	private String pageSize;
 	private String pageNo;
 	private String sid;
-	
+	private String checksum;
+	private String encKey;
+	private String headerKey;
 }
