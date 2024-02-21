@@ -26,7 +26,7 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
 
 	@Override
 	public String accountVerification(AccountVerificationThroughACandIFSC accVerification) {
-		JSONObject obj = getJsonRequest();
+		JSONObject obj = new JSONObject();
 
 		ENC_KEY = accVerification.getEncKey();
 		obj.put("source", accVerification.getSource());
@@ -43,7 +43,7 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
 		System.out.println("Checksum is " + checksum);
 		obj.put("checksum", checksum);
 		System.out.println("Final string to encrypt is " + obj.toString());
-		String encryptedReq =Util.encryptRequest(obj.toString(), accVerification.getEncKey());
+		String encryptedReq = Util.encryptRequest(obj.toString(), accVerification.getEncKey());
 		System.out.println("Final encrypted request " + encryptedReq);
 		// System.out.println("Decrypted request to cross verify " +
 		// decryptResponse(encryptedReq, ENC_KEY));
@@ -61,11 +61,6 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
 			e.printStackTrace();
 		}
 		return des;
-	}
-
-	private static JSONObject getJsonRequest() {
-		JSONObject obj = new JSONObject();
-		return obj;
 	}
 
 	private static String generatQRChecksum(JSONObject qrObject, String checkSumKey) {

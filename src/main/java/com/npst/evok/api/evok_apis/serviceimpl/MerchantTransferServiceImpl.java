@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.npst.evok.api.evok_apis.constants.ConstantURL;
@@ -16,11 +18,13 @@ import com.npst.evok.api.evok_apis.utils.Util;
 @Service
 public class MerchantTransferServiceImpl implements MerchantTransferService {
 
+	Logger logger = LoggerFactory.getLogger(MerchantTransferServiceImpl.class);
+
 	public String ENC_KEY = "";
 
 	@Override
 	public Object merchantTransfer(MerchantTransfer merchantTransfer) {
-		JSONObject obj = getJsonRequest();
+		JSONObject obj = new JSONObject();
 
 		ENC_KEY = merchantTransfer.getEncKey();
 
@@ -40,7 +44,7 @@ public class MerchantTransferServiceImpl implements MerchantTransferService {
 		System.out.println("Checksum is " + checksum);
 		obj.put("checksum", checksum);
 		System.out.println("Final string to encrypt is " + obj.toString());
-		String encryptedReq =Util.encryptRequest(obj.toString(), merchantTransfer.getEncKey());
+		String encryptedReq = Util.encryptRequest(obj.toString(), merchantTransfer.getEncKey());
 		System.out.println("Final encrypted request " + encryptedReq);
 //        return encryptedReq;
 		String des = null;
@@ -49,16 +53,12 @@ public class MerchantTransferServiceImpl implements MerchantTransferService {
 
 		try {
 			des = java.net.URLDecoder.decode(Util.decryptResponse(enqResponse, ENC_KEY), StandardCharsets.UTF_8.name());
+			logger.info("This is decrypted response " + des);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return des;
-	}
-
-	private static JSONObject getJsonRequest() {
-		JSONObject obj = new JSONObject();
-		return obj;
 	}
 
 	private static String generatemerchantTransferChecksum(JSONObject qrObject, String checkSumKey) {

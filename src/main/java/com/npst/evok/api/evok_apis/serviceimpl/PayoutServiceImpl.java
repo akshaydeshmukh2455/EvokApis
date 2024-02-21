@@ -39,13 +39,11 @@ public class PayoutServiceImpl implements PayoutService {
 			payeeObj.put("remarks", payee.getRemarks());
 
 			if (payee.getPayeeAcNum() != null && payee.getPayeeIfsc() != null) {
-
 				payeeObj.put("payeeAcNum", payee.getPayeeAcNum());
 				payeeObj.put("payeeIfsc", payee.getPayeeIfsc());
 			}
 
 			if (payee.getPayeeAddr() != null) {
-
 				payeeObj.put("payeeAddr", payee.getPayeeAddr());
 			}
 

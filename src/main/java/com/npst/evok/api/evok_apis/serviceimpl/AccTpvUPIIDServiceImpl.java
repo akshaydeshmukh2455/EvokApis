@@ -19,7 +19,7 @@ public class AccTpvUPIIDServiceImpl implements AccTpvUPIIDService {
 
 	@Override
 	public String accTpvUPIID(AccTpvUPIID accTpvUPIID) {
-//		JSONObject obj = getJsonRequest();
+
 		JSONObject obj = new JSONObject();
 
 		ENC_KEY = accTpvUPIID.getEncKey();
@@ -47,11 +47,6 @@ public class AccTpvUPIIDServiceImpl implements AccTpvUPIIDService {
 		}
 		return des;
 	}
-
-//	private static JSONObject getJsonRequest() {
-//		JSONObject obj = new JSONObject();
-//		return obj;
-//	}
 
 	private static String generatAccTpvUpiIdChecksum(JSONObject qrObject, String checkSumKey) {
 		StringBuilder concatenatedString = new StringBuilder();

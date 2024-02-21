@@ -18,7 +18,7 @@ public class AccTpvEnquiryServiceImpl implements AccTpvEnquiryService {
 
 	@Override
 	public String accTpvEnquiry(AccTpvEnquiry accTpvEnquiry) {
-		JSONObject obj = getJsonRequest();
+		JSONObject obj = new JSONObject();
 
 		ENC_KEY = accTpvEnquiry.getEncKey();
 		obj.put("source", accTpvEnquiry.getSource());
@@ -45,11 +45,6 @@ public class AccTpvEnquiryServiceImpl implements AccTpvEnquiryService {
 			e.printStackTrace();
 		}
 		return des;
-	}
-
-	private static JSONObject getJsonRequest() {
-		JSONObject obj = new JSONObject();
-		return obj;
 	}
 
 	private static String generatAccTpvEnquiryChecksum(JSONObject qrObject, String checkSumKey) {

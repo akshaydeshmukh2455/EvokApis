@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.npst.evok.api.evok_apis.constants.ConstantURL;
@@ -14,12 +16,12 @@ import com.npst.evok.api.evok_apis.utils.Util;
 
 @Service
 public class QrStatusExtIdServiceImpl implements QrStatusExtIdService {
-
+	Logger logger = LoggerFactory.getLogger(QrStatusExtIdServiceImpl.class);
 	public String ENC_KEY = "";
 
 	@Override
 	public Object qrStatusExtId(QrStatusExtId qrStatusExtId) {
-		JSONObject obj = getJsonRequest();
+		JSONObject obj = new JSONObject();
 
 		ENC_KEY = qrStatusExtId.getEncKey();
 
@@ -35,23 +37,19 @@ public class QrStatusExtIdServiceImpl implements QrStatusExtIdService {
 		System.out.println("Final string to encrypt is " + obj.toString());
 		String encryptedReq = Util.encryptRequest(obj.toString(), qrStatusExtId.getEncKey());
 
-
 		String des = null;
 		String enqResponse = HttpClient.sendToSwitch(qrStatusExtId.getHeaderKey(), ConstantURL.QR_STATUS_EXTID,
 				encryptedReq);
 
 		try {
 			des = java.net.URLDecoder.decode(Util.decryptResponse(enqResponse, ENC_KEY), StandardCharsets.UTF_8.name());
+			logger.info("This is decrypted response " + des);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println(des);
 		return des;
-	}
-
-	private static JSONObject getJsonRequest() {
-		JSONObject obj = new JSONObject();
-		return obj;
 	}
 
 	private static String generateQrStatusExtIdChecksum(JSONObject qrObject, String checkSumKey) {

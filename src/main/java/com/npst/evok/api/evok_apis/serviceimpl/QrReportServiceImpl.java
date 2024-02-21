@@ -16,7 +16,7 @@ public class QrReportServiceImpl implements QrReportService {
 
 	@Override
 	public String qrReport(QrReport qrReport) {
-		JSONObject obj = getJsonRequest();
+		JSONObject obj = new JSONObject();
 
 		ENC_KEY = qrReport.getEncKey();
 
@@ -39,17 +39,11 @@ public class QrReportServiceImpl implements QrReportService {
 		System.out.println("Final encrypted request " + encryptedReq);
 
 		String des = null;
-		String enqResponse = HttpClient.sendToSwitch(qrReport.getHeaderKey(), ConstantURL.QR_REPORT,
-				encryptedReq);
+		String enqResponse = HttpClient.sendToSwitch(qrReport.getHeaderKey(), ConstantURL.QR_REPORT, encryptedReq);
 
-		des =Util.decryptResponse(enqResponse, ENC_KEY);
+		des = Util.decryptResponse(enqResponse, ENC_KEY);
 		return des;
 
-	}
-
-	private static JSONObject getJsonRequest() {
-		JSONObject obj = new JSONObject();
-		return obj;
 	}
 
 	private static String generateQrReportChecksum(JSONObject qrObject, String checkSumKey) {

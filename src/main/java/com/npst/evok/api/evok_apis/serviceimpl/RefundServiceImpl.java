@@ -2,6 +2,7 @@ package com.npst.evok.api.evok_apis.serviceimpl;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -11,18 +12,19 @@ import com.npst.evok.api.evok_apis.entity.Refund;
 import com.npst.evok.api.evok_apis.service.RefundService;
 import com.npst.evok.api.evok_apis.utils.HttpClient;
 import com.npst.evok.api.evok_apis.utils.Util;
+
 @Service
-public class RefundServiceImpl implements RefundService{
+public class RefundServiceImpl implements RefundService {
 	public String ENC_KEY = "";
 
 	@Override
 	public String refund(Refund refund) {
-		JSONObject obj = getJsonRequest();
+		JSONObject obj = new JSONObject();
 
 		ENC_KEY = refund.getEncKey();
 		obj.put("source", refund.getSource());
-//		obj.put("extTransactionId", accTpvEnquiry.getSource() + Math.abs(new Random().nextInt()));
-		obj.put("extTransactionId", refund.getExtTransactionId());
+		obj.put("extTransactionId", refund.getSource() + Math.abs(new Random().nextInt()));
+//		obj.put("extTransactionId", refund.getExtTransactionId());
 		obj.put("orgTxnId", refund.getOrgTxnId());
 		obj.put("orgRrn", refund.getOrgRrn());
 		obj.put("payeeAddr", refund.getPayeeAddr());
@@ -38,8 +40,7 @@ public class RefundServiceImpl implements RefundService{
 		System.out.println("Final encrypted request " + encryptedReq);
 
 		String des = null;
-		String enqResponse = HttpClient.sendToSwitch(refund.getHeaderKey(), ConstantURL.REFUND,
-				encryptedReq);
+		String enqResponse = HttpClient.sendToSwitch(refund.getHeaderKey(), ConstantURL.REFUND, encryptedReq);
 
 		try {
 			des = java.net.URLDecoder.decode(Util.decryptResponse(enqResponse, ENC_KEY), StandardCharsets.UTF_8.name());
@@ -48,11 +49,6 @@ public class RefundServiceImpl implements RefundService{
 			e.printStackTrace();
 		}
 		return des;
-	}
-
-	private static JSONObject getJsonRequest() {
-		JSONObject obj = new JSONObject();
-		return obj;
 	}
 
 	private static String generatAccTpvEnquiryChecksum(JSONObject qrObject, String checkSumKey) {
