@@ -1,10 +1,22 @@
 package com.npst.evok.api.evok_apis.entity;
 
-import lombok.Getter;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 public class GenerateQR {
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int qrId;
 	private String source;
 	private String channel;
 	private String extTransactionId;
@@ -18,6 +30,9 @@ public class GenerateQR {
 	private String receipt;
 	private String checksum;
 	private String encKey;
-	private String headerKey;	
+	private String headerKey;
+	private String qrString;
+	@Transient
+	private String url;
 //	private String jwtToken;
 }

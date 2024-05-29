@@ -37,6 +37,9 @@ public class PayoutServiceImpl implements PayoutService {
 			payeeObj.put("payeeMobile", payee.getPayeeMobile());
 			payeeObj.put("payeeAmount", payee.getPayeeAmount());
 			payeeObj.put("remarks", payee.getRemarks());
+			payeeObj.put("senderEmail", payee.getSenderEmail());
+			payeeObj.put("paymentMethod", payee.getPaymentMethod());
+			
 
 			if (payee.getPayeeAcNum() != null && payee.getPayeeIfsc() != null) {
 				payeeObj.put("payeeAcNum", payee.getPayeeAcNum());
@@ -52,7 +55,7 @@ public class PayoutServiceImpl implements PayoutService {
 		JSONObject mainObj = new JSONObject();
 		mainObj.put("source", payout.getSource());
 		mainObj.put("sid", payout.getSid());
-		mainObj.put("requestDate", payout.getRequestDate());
+//		mainObj.put("requestDate", payout.getRequestDate());
 		mainObj.put("payees", payees);
 
 		System.out.println("Final request before checksum " + mainObj.toString());
@@ -85,19 +88,54 @@ public class PayoutServiceImpl implements PayoutService {
 //		return enqReq;
 	}
 
+//	static String generatePayoutChecksum(JSONObject payoutObj, String checkSumKey) {
+//		System.out.println("This is payoutObj"+payoutObj);
+//		StringBuilder concatenatedString = new StringBuilder();
+//		try {
+//			concatenatedString.append(payoutObj.get("extTransactionId"));
+//			concatenatedString.append(payoutObj.get("payeeName"));
+//			concatenatedString.append(payoutObj.get("payeeAcNum"));
+//			concatenatedString.append(payoutObj.get("payeeIfsc"));
+//			concatenatedString.append(payoutObj.get("payeeAddr"));
+//			concatenatedString.append(payoutObj.get("payeeAmount"));
+//			concatenatedString.append(payoutObj.get("senderEmail"));
+//			concatenatedString.append(payoutObj.get("payeeMobile"));
+//			concatenatedString.append(payoutObj.get("paymentMethod"));
+//			concatenatedString.append(payoutObj.get("remarks"));
+////			concatenatedString.append(payoutObj.get("extTransactionId"));
+//
+//			System.out.println("String is " + concatenatedString.toString());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		return Util.generateChecksumMerchant(concatenatedString.toString(), checkSumKey);
+//	}
 	static String generatePayoutChecksum(JSONObject payoutObj, String checkSumKey) {
-		StringBuilder concatenatedString = new StringBuilder();
-		try {
-			concatenatedString.append(payoutObj.get("source"));
-			concatenatedString.append(payoutObj.get("sid"));
-			concatenatedString.append("CH_$0Ma_K(yN@!D@n$T");
+	    StringBuilder concatenatedString = new StringBuilder();
+	    JSONArray payees = (JSONArray) payoutObj.get("payees");
+	    
+	    try {
+	        for (Object payeeObj : payees) {
+	            JSONObject payee = (JSONObject) payeeObj;
+	            concatenatedString.append(payee.get("extTransactionId"));
+	            concatenatedString.append(payee.get("payeeName"));
+	            concatenatedString.append(payee.get("payeeAcNum"));
+	            concatenatedString.append(payee.get("payeeIfsc"));
+	            concatenatedString.append(payee.get("payeeAddr"));
+	            concatenatedString.append(payee.get("payeeAmount"));
+	            concatenatedString.append(payee.get("senderEmail"));
+	            concatenatedString.append(payee.get("payeeMobile"));
+	            concatenatedString.append(payee.get("paymentMethod"));
+	            concatenatedString.append(payee.get("remarks"));
+	        }
 
-			System.out.println("String is " + concatenatedString.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	        System.out.println("String is " + concatenatedString.toString());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 
-		return Util.generateChecksumMerchant(concatenatedString.toString(), checkSumKey);
+	    return Util.generateChecksumMerchant(concatenatedString.toString(), checkSumKey);
 	}
 
 }

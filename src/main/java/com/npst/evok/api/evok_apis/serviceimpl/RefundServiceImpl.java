@@ -23,9 +23,10 @@ public class RefundServiceImpl implements RefundService {
 
 		ENC_KEY = refund.getEncKey();
 		obj.put("source", refund.getSource());
+		obj.put("sid", refund.getSid());
+		obj.put("orgTxnId", refund.getOrgTxnId());
 		obj.put("extTransactionId", refund.getSource() + Math.abs(new Random().nextInt()));
 //		obj.put("extTransactionId", refund.getExtTransactionId());
-		obj.put("orgTxnId", refund.getOrgTxnId());
 		obj.put("orgRrn", refund.getOrgRrn());
 		obj.put("payeeAddr", refund.getPayeeAddr());
 		obj.put("amount", refund.getAmount());

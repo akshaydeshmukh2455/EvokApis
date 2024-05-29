@@ -38,7 +38,7 @@ public class QrStatusExtIdServiceImpl implements QrStatusExtIdService {
 		String encryptedReq = Util.encryptRequest(obj.toString(), qrStatusExtId.getEncKey());
 
 		String des = null;
-		String enqResponse = HttpClient.sendToSwitch(qrStatusExtId.getHeaderKey(), ConstantURL.QR_STATUS_EXTID,
+		String enqResponse = HttpClient.sendToSwitch(qrStatusExtId.getHeaderKey(), qrStatusExtId.getUrl(),
 				encryptedReq);
 
 		try {

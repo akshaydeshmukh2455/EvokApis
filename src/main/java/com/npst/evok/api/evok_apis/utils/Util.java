@@ -57,7 +57,7 @@ public class Util {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-//		System.out.println(" Checksum generated is :::" + sb.toString());
+		System.out.println(" Checksum generated is :::" + sb.toString());
 		return sb.toString();
 	}
 

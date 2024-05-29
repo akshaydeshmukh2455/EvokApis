@@ -39,7 +39,7 @@ public class QrReportServiceImpl implements QrReportService {
 		System.out.println("Final encrypted request " + encryptedReq);
 
 		String des = null;
-		String enqResponse = HttpClient.sendToSwitch(qrReport.getHeaderKey(), ConstantURL.QR_REPORT, encryptedReq);
+		String enqResponse = HttpClient.sendToSwitch(qrReport.getHeaderKey(), qrReport.getUrl(), encryptedReq);
 
 		des = Util.decryptResponse(enqResponse, ENC_KEY);
 		return des;

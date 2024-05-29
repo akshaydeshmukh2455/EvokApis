@@ -24,7 +24,7 @@ public class GenerateQRController {
 	private GenerateQRService generateQRService;
 
 	@PostMapping("/generateQREnc")
-	public ResponseEntity<Object> qrReport(@RequestBody GenerateQR generateQR) {
+	public ResponseEntity<Object> generateQR(@RequestBody GenerateQR generateQR) {
 		Object response = null;
 		try {
 			response = generateQRService.generateQR(generateQR);

@@ -13,5 +13,5 @@ public class VerifyVpa {
 	private String checksum;
 	private String encKey;
 	private String headerKey;
-	
+	private String url;
 }

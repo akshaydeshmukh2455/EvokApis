@@ -3,14 +3,17 @@ package com.npst.evok.api.evok_apis.serviceimpl;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
+import java.util.UUID;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.npst.evok.api.evok_apis.constants.ConstantURL;
 import com.npst.evok.api.evok_apis.entity.MerchantTransfer;
+import com.npst.evok.api.evok_apis.repository.MerchantTransferRepo;
 import com.npst.evok.api.evok_apis.service.MerchantTransferService;
 import com.npst.evok.api.evok_apis.utils.HttpClient;
 import com.npst.evok.api.evok_apis.utils.Util;
@@ -19,6 +22,8 @@ import com.npst.evok.api.evok_apis.utils.Util;
 public class MerchantTransferServiceImpl implements MerchantTransferService {
 
 	Logger logger = LoggerFactory.getLogger(MerchantTransferServiceImpl.class);
+	@Autowired
+	private MerchantTransferRepo repo;
 
 	public String ENC_KEY = "";
 
@@ -31,7 +36,13 @@ public class MerchantTransferServiceImpl implements MerchantTransferService {
 		obj.put("source", merchantTransfer.getSource());
 		obj.put("channel", merchantTransfer.getChannel());
 //        obj.put("extTransactionId", merchantTransfer.getExtTransactionId());
-		obj.put("extTransactionId", merchantTransfer.getSource() + Math.abs(new Random().nextInt()));
+		
+		String extTransactionId = merchantTransfer.getSource()
+				+ UUID.randomUUID().toString().substring(0, 20).replace("-", "").toUpperCase();
+		obj.put("extTransactionId", extTransactionId);
+		merchantTransfer.setExtTransactionId(extTransactionId);
+		
+//		obj.put("extTransactionId", merchantTransfer.getSource() + Math.abs(new Random().nextInt()));
 		obj.put("upiId", merchantTransfer.getUpiId());
 		obj.put("terminalId", merchantTransfer.getTerminalId());
 		obj.put("amount", merchantTransfer.getAmount());
@@ -48,7 +59,7 @@ public class MerchantTransferServiceImpl implements MerchantTransferService {
 		System.out.println("Final encrypted request " + encryptedReq);
 //        return encryptedReq;
 		String des = null;
-		String enqResponse = HttpClient.sendToSwitch(merchantTransfer.getHeaderKey(), ConstantURL.MERCHANT_TRANSFER,
+		String enqResponse = HttpClient.sendToSwitch(merchantTransfer.getHeaderKey(), merchantTransfer.getUrl(),
 				encryptedReq);
 
 		try {
@@ -58,6 +69,7 @@ public class MerchantTransferServiceImpl implements MerchantTransferService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		repo.save(merchantTransfer);
 		return des;
 	}
 

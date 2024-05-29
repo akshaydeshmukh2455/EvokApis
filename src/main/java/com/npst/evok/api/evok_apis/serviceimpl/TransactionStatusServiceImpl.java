@@ -37,7 +37,7 @@ public class TransactionStatusServiceImpl implements TransactionStatusService{
         System.out.println("Final encrypted request " + encryptedReq);
 
         String des = null;
-		String enqResponse = HttpClient.sendToSwitch(transactionStatus.getHeaderKey(), ConstantURL.TRANSACTION_STATUS, encryptedReq);
+		String enqResponse = HttpClient.sendToSwitch(transactionStatus.getHeaderKey(), transactionStatus.getUrl(), encryptedReq);
 
 		try {
 			des = java.net.URLDecoder.decode(Util.decryptResponse(enqResponse, ENC_KEY), StandardCharsets.UTF_8.name());

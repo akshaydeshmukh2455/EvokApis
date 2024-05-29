@@ -40,7 +40,7 @@ public class TransactionReportServiceImpl implements TransactionReportService {
 		System.out.println("Final encrypted request " + encryptedReq);
 
 		String des = null;
-		String enqResponse = HttpClient.sendToSwitch(transactionReport.getHeaderKey(), ConstantURL.TRANSACTION_REPORT,
+		String enqResponse = HttpClient.sendToSwitch(transactionReport.getHeaderKey(), transactionReport.getUrl(),
 				encryptedReq);
 
 		try {

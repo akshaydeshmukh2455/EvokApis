@@ -11,6 +11,6 @@ public class TransactionStatus {
 	private String checksum;
 	private String encKey;
 	private String headerKey;
-	
+	private String url;
 	
 }

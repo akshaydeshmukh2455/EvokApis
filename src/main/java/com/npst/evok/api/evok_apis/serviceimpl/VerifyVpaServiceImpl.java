@@ -31,8 +31,8 @@ public class VerifyVpaServiceImpl implements VerifyVPAService {
 		obj.put("upiId", verifyVpa.getUpiId());
 		obj.put("terminalId", verifyVpa.getTerminalId());
 		obj.put("sid", verifyVpa.getSid());
-		obj.put("extTransactionId", verifyVpa.getSource() + Math.abs(new Random().nextInt()));
-//        obj.put("extTransactionId", verifyVpa.getExtTransactionId());
+//		obj.put("extTransactionId", verifyVpa.getSource() + Math.abs(new Random().nextInt()));
+        obj.put("extTransactionId", verifyVpa.getExtTransactionId());
 
 		System.out.println("Raw Request" + obj.toString());
 		String checksum = generateVerifyVpaChecksum(obj, verifyVpa.getChecksum());
@@ -45,7 +45,7 @@ public class VerifyVpaServiceImpl implements VerifyVPAService {
 //        return encryptedReq;
 
 		String des = null;
-		String enqResponse = HttpClient.sendToSwitch(verifyVpa.getHeaderKey(), ConstantURL.VERIFY_VPA, encryptedReq);
+		String enqResponse = HttpClient.sendToSwitch(verifyVpa.getHeaderKey(), verifyVpa.getUrl(), encryptedReq);
 
 		try {
 			des = java.net.URLDecoder.decode(Util.decryptResponse(enqResponse, ENC_KEY), StandardCharsets.UTF_8.name());

@@ -7,7 +7,8 @@ import lombok.Getter;
 public class Payout {
 	private String source;
 	private String sid;
-	private String requestDate;
+//	private String requestDate;
+	private String origin;
 	private String checksum;
 	private String encKey;
 	private String headerKey;

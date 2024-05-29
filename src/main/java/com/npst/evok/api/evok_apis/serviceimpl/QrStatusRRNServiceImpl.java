@@ -40,7 +40,7 @@ public class QrStatusRRNServiceImpl implements QrStatusRRNService {
 		System.out.println("Final encrypted request " + encryptedReq);
 
 		String des = null;
-		String enqResponse = HttpClient.sendToSwitch(qrStatusRRN.getHeaderKey(), ConstantURL.QR_STATUS_RRN,
+		String enqResponse = HttpClient.sendToSwitch(qrStatusRRN.getHeaderKey(), qrStatusRRN.getUrl(),
 				encryptedReq);
 
 		try {

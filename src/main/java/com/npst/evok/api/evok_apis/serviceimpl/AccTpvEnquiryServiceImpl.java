@@ -2,10 +2,8 @@ package com.npst.evok.api.evok_apis.serviceimpl;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
-
 import com.npst.evok.api.evok_apis.constants.ConstantURL;
 import com.npst.evok.api.evok_apis.entity.AccTpvEnquiry;
 import com.npst.evok.api.evok_apis.service.AccTpvEnquiryService;
