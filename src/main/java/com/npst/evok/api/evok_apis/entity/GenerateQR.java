@@ -1,5 +1,7 @@
 package com.npst.evok.api.evok_apis.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,6 +34,7 @@ public class GenerateQR {
 	private String encKey;
 	private String headerKey;
 	private String qrString;
+	private LocalDateTime expiryTime;
 	@Transient
 	private String url;
 //	private String jwtToken;
